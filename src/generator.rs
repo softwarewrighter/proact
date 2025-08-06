@@ -102,7 +102,6 @@ fn generate_project_specific_notes(target_path: &Path, verbose: bool) -> Result<
     let package_json = target_path.join("package.json");
     let pyproject_toml = target_path.join("pyproject.toml");
     let requirements_txt = target_path.join("requirements.txt");
-    let go_mod = target_path.join("go.mod");
 
     if cargo_toml.exists() {
         if verbose {
@@ -125,13 +124,6 @@ fn generate_project_specific_notes(target_path: &Path, verbose: bool) -> Result<
         notes.push(python_specific_notes());
     }
 
-    if go_mod.exists() {
-        if verbose {
-            eprintln!("    Detected Go project");
-        }
-        notes.push(go_specific_notes());
-    }
-
     if notes.is_empty() {
         Ok(None)
     } else {
@@ -147,11 +139,23 @@ fn rust_specific_notes() -> String {
     r#"### Rust Development
 - Use `cargo build` to compile the project
 - Use `cargo test` to run all tests
-- Use `cargo clippy` for linting
+- Use `cargo clippy --all-targets --all-features -- -D warnings` for strict linting
 - Use `cargo fmt` for code formatting
 - Use `cargo doc --open` to generate and view documentation
 - Follow Rust naming conventions (snake_case for functions/variables, CamelCase for types)
-- Ensure all public items have documentation comments"#
+- Ensure all public items have documentation comments
+- Use Rust 2024 edition features where applicable
+- Prefer `let-else` patterns for error handling where appropriate
+- Use workspace dependencies for multi-crate projects
+
+### Rust/WASM Projects
+- Keep JavaScript to absolute minimum - only for WASM loading
+- All business logic must be in Rust
+- Use `wasm-bindgen` for JS interop
+- Use `wasm-pack` for building and packaging
+- Write tests in Rust using `wasm-bindgen-test`, not in JavaScript
+- Use `web-sys` for DOM manipulation from Rust
+- Minimize JS bundle size - let Rust handle the complexity"#
         .to_string()
 }
 
@@ -170,25 +174,17 @@ fn javascript_specific_notes() -> String {
 /// Returns Python-specific development notes
 fn python_specific_notes() -> String {
     r#"### Python Development
-- Use `pip install -r requirements.txt` or `poetry install` for dependencies
-- Use `pytest` or `python -m unittest` to run tests
-- Use `pylint`, `flake8`, or `ruff` for linting
-- Use `black` for code formatting
+- Use `uv` for dependency management (preferred over pip/conda)
+  - `uv pip install -r requirements.txt` for installing dependencies
+  - `uv venv` for virtual environment creation
+  - `uv pip compile requirements.in` for dependency locking
+- Use `pytest` to run tests (avoid unittest)
+- Use `ruff` for linting and formatting (replaces black, flake8, pylint, isort)
+  - `ruff check` for linting
+  - `ruff format` for formatting
 - Follow PEP 8 style guidelines
+- Use type hints for all function signatures
 - Use docstrings for all functions, classes, and modules"#
-        .to_string()
-}
-
-/// Returns Go-specific development notes
-fn go_specific_notes() -> String {
-    r#"### Go Development
-- Use `go build` to compile the project
-- Use `go test ./...` to run all tests
-- Use `go vet` for static analysis
-- Use `go fmt` or `gofmt` for code formatting
-- Use `golint` or `golangci-lint` for additional linting
-- Follow Go naming conventions and idioms
-- Write table-driven tests where appropriate"#
         .to_string()
 }
 
@@ -198,10 +194,23 @@ mod tests {
     use std::fs;
     use std::path::PathBuf;
 
+    /// Get test output directory path
+    fn get_test_dir(test_name: &str) -> PathBuf {
+        PathBuf::from("test-output").join(test_name)
+    }
+
+    /// Setup test directory - removes old artifacts if present
+    fn setup_test_dir(test_name: &str) -> PathBuf {
+        let dir = get_test_dir(test_name);
+        // Clean up any previous test artifacts
+        let _ = fs::remove_dir_all(&dir);
+        fs::create_dir_all(&dir).unwrap();
+        dir
+    }
+
     #[test]
     fn test_generate_documentation() {
-        let temp_dir = std::env::temp_dir().join("proact_test");
-        fs::create_dir_all(&temp_dir).unwrap();
+        let temp_dir = setup_test_dir("generate_doc");
 
         let result = generate_documentation(&temp_dir, false);
         assert!(result.is_ok());
@@ -212,8 +221,7 @@ mod tests {
         assert!(doc.contains("Continuous Improvement"));
         assert!(doc.contains("Playwright MCP"));
 
-        // Clean up
-        let _ = fs::remove_dir_all(&temp_dir);
+        // No cleanup - leave for inspection
     }
 
     #[test]
@@ -226,43 +234,37 @@ mod tests {
 
     #[test]
     fn test_rust_project_detection() {
-        let temp_dir = std::env::temp_dir().join("proact_rust_test");
-        fs::create_dir_all(&temp_dir).unwrap();
+        let temp_dir = setup_test_dir("rust_detection");
         fs::write(temp_dir.join("Cargo.toml"), "[package]").unwrap();
 
         let notes = generate_project_specific_notes(&temp_dir, false).unwrap();
         assert!(notes.is_some());
         assert!(notes.unwrap().contains("Rust Development"));
 
-        // Clean up
-        let _ = fs::remove_dir_all(&temp_dir);
+        // No cleanup - leave for inspection
     }
 
     #[test]
     fn test_javascript_project_detection() {
-        let temp_dir = std::env::temp_dir().join("proact_js_test");
-        fs::create_dir_all(&temp_dir).unwrap();
+        let temp_dir = setup_test_dir("js_detection");
         fs::write(temp_dir.join("package.json"), "{}").unwrap();
 
         let notes = generate_project_specific_notes(&temp_dir, false).unwrap();
         assert!(notes.is_some());
         assert!(notes.unwrap().contains("JavaScript/Node.js Development"));
 
-        // Clean up
-        let _ = fs::remove_dir_all(&temp_dir);
+        // No cleanup - leave for inspection
     }
 
     #[test]
     fn test_python_project_detection() {
-        let temp_dir = std::env::temp_dir().join("proact_py_test");
-        fs::create_dir_all(&temp_dir).unwrap();
+        let temp_dir = setup_test_dir("python_detection");
         fs::write(temp_dir.join("requirements.txt"), "").unwrap();
 
         let notes = generate_project_specific_notes(&temp_dir, false).unwrap();
         assert!(notes.is_some());
         assert!(notes.unwrap().contains("Python Development"));
 
-        // Clean up
-        let _ = fs::remove_dir_all(&temp_dir);
+        // No cleanup - leave for inspection
     }
 }

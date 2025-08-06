@@ -38,10 +38,21 @@ pub struct Args {
         short = 'o',
         long = "output-dir",
         value_name = "DIR",
-        default_value = "./docs",
+        default_value = "docs",
         help = "Output directory for generated documentation"
     )]
     pub output_dir: PathBuf,
+
+    /// Perform a dry run without creating files
+    ///
+    /// Shows all operations that would be performed without actually
+    /// executing them. Implies verbose mode.
+    #[arg(
+        short = 'n',
+        long = "dry-run",
+        help = "Show what would be done without actually doing it"
+    )]
+    pub dry_run: bool,
 }
 
 #[cfg(test)]
@@ -52,8 +63,9 @@ mod tests {
     fn test_cli_parsing() {
         let args = Args::parse_from(["proact", "../test-proj"]);
         assert_eq!(args.target, PathBuf::from("../test-proj"));
-        assert_eq!(args.output_dir, PathBuf::from("./docs"));
+        assert_eq!(args.output_dir, PathBuf::from("docs"));
         assert!(!args.verbose);
+        assert!(!args.dry_run);
     }
 
     #[test]
@@ -80,5 +92,17 @@ mod tests {
         assert!(args.verbose);
         assert_eq!(args.output_dir, PathBuf::from("./custom"));
         assert_eq!(args.target, PathBuf::from("../project"));
+    }
+
+    #[test]
+    fn test_cli_with_dry_run() {
+        let args = Args::parse_from(["proact", "-n", "../test-proj"]);
+        assert!(args.dry_run);
+    }
+
+    #[test]
+    fn test_cli_with_dry_run_long() {
+        let args = Args::parse_from(["proact", "--dry-run", "../test-proj"]);
+        assert!(args.dry_run);
     }
 }

@@ -16,21 +16,28 @@ Proact creates documentation that instructs AI coding agents to:
 # Basic usage
 cargo run -- <target-project-path>
 
-# With verbose output
+# With verbose output (shows file operations)
 cargo run -- -v <target-project-path>
+
+# Dry run mode (preview without creating files)
+cargo run -- -n <target-project-path>
 
 # Specify custom output directory
 cargo run -- -o ./custom-docs <target-project-path>
 
 # Example: Generate docs for a neighboring project
 cargo run -- -v ../my-project
+
+# Example: Preview what would be created
+cargo run -- --dry-run ../my-project
 ```
 
 ## CLI Options
 
 - `-V, --version` - Show version information
 - `-h, --help` - Display help message
-- `-v, --verbose` - Enable verbose output showing generation progress
+- `-v, --verbose` - Enable verbose output showing generation progress and file operations
+- `-n, --dry-run` - Show what would be done without actually creating files (implies verbose)
 - `-o, --output-dir <DIR>` - Output directory for generated documentation (default: `./docs`)
 - `<TARGET>` - Required: Path to an existing project directory
 

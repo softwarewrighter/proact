@@ -12,8 +12,12 @@ Proact is a Rust CLI tool that generates comprehensive documentation for AI codi
 # Basic usage
 cargo run -- <target-project-path>
 
-# With verbose output
+# With verbose output (shows file operations like mkdir and write)
 cargo run -- -v <target-project-path>
+
+# Dry run mode (preview operations without creating files)
+cargo run -- -n <target-project-path>
+cargo run -- --dry-run <target-project-path>
 
 # Specify custom output directory
 cargo run -- -o ./custom-docs <target-project-path>
@@ -21,11 +25,14 @@ cargo run -- -o ./custom-docs <target-project-path>
 # Example: Generate docs for a neighboring project
 cargo run -- -v ../my-project
 
+# Example: Preview what would be created without actually creating files
+cargo run -- -n -o ./test-docs ../my-project
+
 # Build release version
 cargo build --release
 
-# Run release version
-./target/release/proact -v ../my-project
+# Run release version with dry-run
+./target/release/proact -n ../my-project
 ```
 
 ## Build and Development Commands

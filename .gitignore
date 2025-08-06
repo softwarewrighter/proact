@@ -1,1 +1,6 @@
 /target
+
+# Test output directories
+/test-output/
+/tmp-test-*
+/another-docs
