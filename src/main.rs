@@ -152,11 +152,13 @@ fn main() -> Result<()> {
     } else {
         println!("🔍 DRY RUN completed - no files were created");
         println!("📄 Would create: {}", output_file.display());
-        let learnings_file = output_dir.join("learnings.md");
-        if learnings_file.exists() {
-            println!("📄 Would append to: {}", learnings_file.display());
-        } else {
-            println!("📄 Would create: {}", learnings_file.display());
+        if let Some(appended) = learnings_action {
+            let learnings_file = output_dir.join("learnings.md");
+            if appended {
+                println!("📄 Would append to: {}", learnings_file.display());
+            } else {
+                println!("📄 Would create: {}", learnings_file.display());
+            }
         }
     }
 

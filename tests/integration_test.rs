@@ -295,3 +295,49 @@ fn test_learnings_append_to_existing() {
 
     // No cleanup - leave for inspection
 }
+
+#[test]
+fn test_dry_run_skips_missing_learnings() {
+    let test_dir = setup_test_dir("dry_run_no_learnings");
+
+    // Create a target project directory
+    let target_dir = test_dir.join("proj");
+    fs::create_dir_all(&target_dir).unwrap();
+    fs::write(target_dir.join("Cargo.toml"), "[package]").unwrap();
+    let target_dir = fs::canonicalize(&target_dir).unwrap();
+
+    // Run CLI from a directory without docs/learnings.md
+    let manifest_path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("Cargo.toml");
+    let output = Command::new("cargo")
+        .args([
+            "run",
+            "--manifest-path",
+            manifest_path.to_str().unwrap(),
+            "--",
+            "-n",
+            target_dir.to_str().unwrap(),
+        ])
+        .current_dir(&test_dir)
+        .output()
+        .expect("Failed to execute command");
+
+    assert!(
+        output.status.success(),
+        "Command failed: {:?}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    // Dry run should not mention learnings.md when source is missing
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(
+        !stdout.contains("learnings.md"),
+        "Output should not mention learnings.md when source is missing"
+    );
+
+    // Output directory should not be created
+    let output_dir = target_dir.join("docs");
+    assert!(
+        !output_dir.exists(),
+        "Output directory should not exist in dry-run mode"
+    );
+}
