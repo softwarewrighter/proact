@@ -12,6 +12,12 @@ Proact is a Rust CLI tool that generates comprehensive documentation for AI codi
 # Basic usage
 cargo run -- <target-project-path>
 
+# Show version with copyright, license, and repository
+cargo run -- -V
+
+# Show extended help with AI coding agent guidance
+cargo run -- --help
+
 # With verbose output (shows file operations like mkdir and write)
 cargo run -- -v <target-project-path>
 
@@ -62,9 +68,12 @@ cargo doc --open
 
 ### Core Components
 - **src/main.rs**: CLI entry point that handles argument parsing and orchestrates document generation
-- **src/cli.rs**: Command-line argument parsing using clap, defines CLI interface
+- **src/cli.rs**: Command-line argument parsing using clap, defines CLI interface with AI agent guidance
 - **src/generator.rs**: Core logic for generating documentation, detects project type and customizes output
+- **src/metadata.rs**: Extracts project metadata (author, license, year) from git and project files
 - **src/templates.rs**: Contains all documentation templates (process guidelines, quality standards, Playwright MCP setup)
+- **templates/process.md**: Development process template (copied from needs-attention project)
+- **templates/tools.md**: Development tools reference template (copied from needs-attention project)
 - **docs/ai_agent_guidelines.md**: Source guidelines for AI agent development processes
 - **research/**: Playwright MCP server documentation and setup guides used as reference
 
@@ -81,12 +90,34 @@ When reaching a checkpoint in development, follow this sequence:
 
 ### Generated Documentation Features
 
-The CLI generates documentation that includes:
-- **Process Guidelines**: Checkpoint-based development workflow for AI agents
-- **Quality Standards**: Documentation, testing, and code quality requirements  
-- **Continuous Improvement**: Learning from failures and updating processes
-- **Playwright MCP Setup**: Installation and usage instructions for browser automation
-- **Project-Specific Notes**: Automatically detects project type (Rust, JavaScript, Python, Go) and adds relevant commands
+The CLI generates the following documentation in the target project's docs directory:
+
+1. **ai_agent_instructions.md**: Comprehensive AI agent guidelines
+   - Process Guidelines: Checkpoint-based development workflow
+   - Quality Standards: Documentation, testing, and code quality requirements
+   - Continuous Improvement: Learning from failures and updating processes
+   - Playwright MCP Setup: Installation and usage instructions for browser automation
+   - Project-Specific Notes: Automatically detects project type (Rust, JavaScript, Python, Go) and adds relevant commands
+
+2. **process.md**: Detailed development process workflow
+   - Copied/appended from templates/process.md
+   - If file exists, content is appended with timestamp and Proact attribution
+
+3. **tools.md**: Development tools reference
+   - Copied/appended from templates/tools.md
+   - If file exists, content is appended with timestamp and Proact attribution
+
+4. **COPYRIGHT**: Copyright notice
+   - Dynamically generated using current year and git user info
+   - Format: "Copyright (c) YYYY Author Name"
+
+5. **LICENSE**: MIT License file
+   - Dynamically generated with copyright holder information
+   - Uses author name from git config or Cargo.toml
+
+6. **learnings.md**: Continuous improvement tracking
+   - Copied/appended from docs/learnings.md if it exists in Proact's directory
+   - If file exists, content is appended with timestamp separator
 
 ### Quality Standards
 

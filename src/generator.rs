@@ -1,7 +1,9 @@
 use anyhow::Result;
 use chrono::Local;
+use std::fs;
 use std::path::Path;
 
+use crate::metadata::{self, ProjectMetadata};
 use crate::templates;
 
 /// Generates comprehensive AI agent documentation for a target project
@@ -186,6 +188,113 @@ fn python_specific_notes() -> String {
 - Use type hints for all function signatures
 - Use docstrings for all functions, classes, and modules"#
         .to_string()
+}
+
+// Embed template files at compile time
+const PROCESS_MD_TEMPLATE: &str = include_str!("../templates/process.md");
+const TOOLS_MD_TEMPLATE: &str = include_str!("../templates/tools.md");
+
+/// Copy or append template files to output directory
+pub fn copy_templates(output_dir: &Path, verbose: bool, dry_run: bool) -> Result<()> {
+    let templates_to_copy = vec![
+        (PROCESS_MD_TEMPLATE, "process.md"),
+        (TOOLS_MD_TEMPLATE, "tools.md"),
+    ];
+
+    for (source_content, dest_name) in templates_to_copy {
+        let dest_path = output_dir.join(dest_name);
+
+        // Check if destination already exists
+        if dest_path.exists() {
+            // Append to existing file with separator
+            let timestamp = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+            let separator = format!(
+                "\n\n---\n\n**The following content was added by [Proact](https://github.com/softwarewrighter/proact) on {}**\n\n",
+                timestamp
+            );
+            let existing_content = fs::read_to_string(&dest_path)?;
+            let combined = format!("{existing_content}{separator}{source_content}");
+
+            if verbose {
+                eprintln!(
+                    "append {} (existing: {} bytes + separator + new: {} bytes)",
+                    dest_path.display(),
+                    existing_content.len(),
+                    source_content.len()
+                );
+            }
+
+            if !dry_run {
+                fs::write(dest_path, combined)?;
+            }
+        } else {
+            // Write new file
+            if verbose {
+                eprintln!(
+                    "write {} ({} bytes)",
+                    dest_path.display(),
+                    source_content.len()
+                );
+            }
+
+            if !dry_run {
+                fs::write(dest_path, source_content)?;
+            }
+        }
+    }
+
+    Ok(())
+}
+
+/// Generate COPYRIGHT and LICENSE files based on project metadata
+pub fn generate_legal_files(
+    target_path: &Path,
+    output_dir: &Path,
+    verbose: bool,
+    dry_run: bool,
+) -> Result<()> {
+    let metadata = ProjectMetadata::extract(target_path)?;
+
+    // Generate COPYRIGHT file
+    let copyright_content = metadata.copyright_string();
+    let copyright_path = output_dir.join("COPYRIGHT");
+
+    if verbose {
+        eprintln!(
+            "write {} ({} bytes)",
+            copyright_path.display(),
+            copyright_content.len()
+        );
+    }
+
+    if !dry_run {
+        fs::write(copyright_path, copyright_content)?;
+    }
+
+    // Generate LICENSE file (currently only MIT supported)
+    if metadata.license == "MIT" || metadata.license == "<license>" {
+        let license_content = metadata::generate_mit_license(&metadata);
+        let license_path = output_dir.join("LICENSE");
+
+        if verbose {
+            eprintln!(
+                "write {} ({} bytes)",
+                license_path.display(),
+                license_content.len()
+            );
+        }
+
+        if !dry_run {
+            fs::write(license_path, license_content)?;
+        }
+    } else if verbose {
+        eprintln!(
+            "# License type '{}' not yet supported for auto-generation, skipping LICENSE file",
+            metadata.license
+        );
+    }
+
+    Ok(())
 }
 
 #[cfg(test)]

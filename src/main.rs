@@ -1,5 +1,6 @@
 mod cli;
 mod generator;
+mod metadata;
 mod templates;
 
 use anyhow::Result;
@@ -67,12 +68,28 @@ fn handle_learnings_file(output_dir: &Path, dry_run: bool, verbose: bool) -> Res
     Ok(Some(target_exists))
 }
 
+/// Print version information with copyright and license
+fn print_version_info() {
+    println!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
+    println!("{}", env!("CARGO_PKG_AUTHORS"));
+    println!("License: {}", env!("CARGO_PKG_LICENSE"));
+    if let Some(repo) = option_env!("CARGO_PKG_REPOSITORY") {
+        println!("Repository: {}", repo);
+    }
+}
+
 /// Proact: A CLI that generates documentation for AI coding agents
 ///
 /// This tool creates comprehensive documentation that instructs AI coding agents
 /// to follow best practices, apply continuous improvement feedback, and utilize
 /// tools like Playwright MCP for browser automation.
 fn main() -> Result<()> {
+    // Check for -V flag manually before parsing
+    if std::env::args().any(|arg| arg == "-V") {
+        print_version_info();
+        return Ok(());
+    }
+
     let args = cli::Args::parse();
 
     // Dry-run implies verbose
@@ -134,12 +151,22 @@ fn main() -> Result<()> {
         std::fs::write(&output_file, doc_content)?;
     }
 
+    // Copy template files (process.md, tools.md)
+    generator::copy_templates(&output_dir, verbose, args.dry_run)?;
+
+    // Generate COPYRIGHT and LICENSE files
+    generator::generate_legal_files(&args.target, &output_dir, verbose, args.dry_run)?;
+
     // Copy or append learnings.md
     let learnings_action = handle_learnings_file(&output_dir, args.dry_run, verbose)?;
 
     if !args.dry_run {
         println!("✅ AI agent documentation generated successfully!");
         println!("📄 Created: {}", output_file.display());
+        println!("📄 Created: {}", output_dir.join("process.md").display());
+        println!("📄 Created: {}", output_dir.join("tools.md").display());
+        println!("📄 Created: {}", output_dir.join("COPYRIGHT").display());
+        println!("📄 Created: {}", output_dir.join("LICENSE").display());
 
         if let Some(appended) = learnings_action {
             let learnings_file = output_dir.join("learnings.md");
@@ -152,6 +179,16 @@ fn main() -> Result<()> {
     } else {
         println!("🔍 DRY RUN completed - no files were created");
         println!("📄 Would create: {}", output_file.display());
+        println!(
+            "📄 Would create: {}",
+            output_dir.join("process.md").display()
+        );
+        println!("📄 Would create: {}", output_dir.join("tools.md").display());
+        println!(
+            "📄 Would create: {}",
+            output_dir.join("COPYRIGHT").display()
+        );
+        println!("📄 Would create: {}", output_dir.join("LICENSE").display());
         if let Some(appended) = learnings_action {
             let learnings_file = output_dir.join("learnings.md");
             if appended {
@@ -164,7 +201,11 @@ fn main() -> Result<()> {
 
     if verbose {
         eprintln!("\nDocumentation includes:");
-        eprintln!("  • Development process guidelines");
+        eprintln!("  • AI agent instructions (ai_agent_instructions.md)");
+        eprintln!("  • Development process guidelines (process.md)");
+        eprintln!("  • Development tools reference (tools.md)");
+        eprintln!("  • Copyright notice (COPYRIGHT)");
+        eprintln!("  • MIT License file (LICENSE)");
         eprintln!("  • Continuous improvement practices");
         eprintln!("  • Playwright MCP setup instructions");
         eprintln!("  • Quality standards and testing requirements");
