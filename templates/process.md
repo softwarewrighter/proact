@@ -183,7 +183,28 @@ git status
 - Update .gitignore if needed
 - Verify only intentional files staged
 
-#### Step 6: Update Documentation
+#### Step 6: Run Software Wrighter Checklist
+
+```bash
+sw-checklist
+```
+
+**Requirements**:
+- ALL checklist items must pass
+- Address any non-compliant project elements
+- Run with --help for project-specific requirements
+
+**If checklist fails**:
+- Fix each failed requirement
+- Re-run until all checks pass
+- Update project structure as needed
+
+**AI Agent Notes**:
+- This ensures project meets Software Wrighter standards
+- Use `sw-checklist --help` for detailed guidance
+- Common checks: documentation, structure, licensing, quality
+
+#### Step 7: Update Documentation
 
 **CRITICAL**: If any of the previous steps required changes, update docs/learnings.md
 
@@ -206,7 +227,7 @@ When updating learnings.md for bugs or test failures:
 - docs/architecture.md if system design changed
 - docs/design.md if design decisions made
 
-#### Step 7: Final Review
+#### Step 8: Final Review
 
 **Self-Review Checklist**:
 - [ ] All tests pass
@@ -214,13 +235,14 @@ When updating learnings.md for bugs or test failures:
 - [ ] Code formatted
 - [ ] Markdown validated (if applicable)
 - [ ] .gitignore appropriate
+- [ ] sw-checklist passes
 - [ ] Documentation updated
 - [ ] docs/learnings.md updated if issues found
 - [ ] No commented-out code
 - [ ] No debug print statements
 - [ ] Commit message clear and detailed
 
-#### Step 8: Commit and Push
+#### Step 9: Commit and Push
 ```bash
 git add -A
 git commit -m "Clear, descriptive message

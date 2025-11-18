@@ -302,6 +302,110 @@ export ANTHROPIC_API_KEY="sk-ant-..."
 - Set API keys in environment for OpenAI/Anthropic
 - Use --usage-report to track API costs
 
+### 5. sw-checklist - Software Wrighter Project Requirements Checker
+
+**Repository**: https://github.com/softwarewrighter/sw-checklist
+**Version**: 0.1.0
+
+**Purpose**: Ensures that a project meets Software Wrighter standards and requirements
+
+**When to Use**:
+- Before committing changes to verify project compliance
+- When setting up a new project to ensure all requirements are met
+- During pre-commit process to validate project structure
+- To identify missing or non-compliant project elements
+
+**Installation**:
+```bash
+# Already installed in ~/.local/softwarewrighter/bin/
+```
+
+**Usage**:
+```bash
+# Run checklist on current project
+sw-checklist
+
+# Show extended help with AI agent guidance
+sw-checklist --help
+
+# Run with verbose output
+sw-checklist -v
+
+# Dry run (preview checks without modifications)
+sw-checklist --dry-run
+```
+
+**What It Checks**:
+- Project structure and required files
+- Documentation completeness
+- Code quality standards
+- Testing requirements
+- License and copyright information
+- Build and deployment configuration
+
+**AI Agent Notes**:
+- Run sw-checklist before creating commits to ensure compliance
+- Use --help to understand specific requirements for your project type
+- Address all checklist failures before pushing to remote
+- Integrate into pre-commit workflow for automated validation
+
+### 6. favicon - Favicon Generator
+
+**Repository**: https://github.com/softwarewrighter/favicon
+**Version**: 0.1.0
+
+**Purpose**: Generates favicon.ico files for web projects
+
+**When to Use**:
+- Setting up a new web project that needs a favicon
+- Creating placeholder favicons during development
+- Generating production-ready favicon files
+
+**Installation**:
+```bash
+# Already installed in ~/.local/softwarewrighter/bin/
+```
+
+**Usage**:
+```bash
+# Show extended help with AI agent guidance
+favicon --help
+
+# Generate red question mark on transparent background (placeholder)
+# Run this in the directory where index.html is served (e.g., public/ or static/)
+favicon -T -t "?" -b ff0000
+
+# Common options:
+# -T          : Transparent background
+# -t "TEXT"   : Text to render in favicon
+# -b RRGGBB   : Background color (hex)
+# -f RRGGBB   : Foreground/text color (hex)
+```
+
+**Common Patterns**:
+
+```bash
+# Placeholder during development (red question mark)
+cd public  # or wherever index.html is served
+favicon -T -t "?" -b ff0000
+
+# Development marker (yellow "D")
+favicon -T -t "D" -b ffff00 -f 000000
+
+# Staging marker (orange "S")
+favicon -T -t "S" -b ff8800 -f ffffff
+
+# Production placeholder (blue "P")
+favicon -T -t "P" -b 0066ff -f ffffff
+```
+
+**AI Agent Notes**:
+- ALWAYS run favicon in the directory where index.html is served
+- Common locations: public/, static/, dist/, www/
+- Replace placeholder favicons before production deployment
+- Use distinctive colors/text for different environments (dev/staging/prod)
+- The -T flag creates transparent backgrounds for better visual appearance
+
 ## Tool Discovery
 
 When new tools are added to `~/.local/softwarewrighter/bin/`:
