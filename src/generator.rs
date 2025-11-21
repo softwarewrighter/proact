@@ -247,17 +247,18 @@ pub fn copy_templates(output_dir: &Path, verbose: bool, dry_run: bool) -> Result
 }
 
 /// Generate COPYRIGHT and LICENSE files based on project metadata
+/// Files are written to the target project root directory
 pub fn generate_legal_files(
     target_path: &Path,
-    output_dir: &Path,
+    _output_dir: &Path,
     verbose: bool,
     dry_run: bool,
 ) -> Result<()> {
     let metadata = ProjectMetadata::extract(target_path)?;
 
-    // Generate COPYRIGHT file
+    // Generate COPYRIGHT file in target project root
     let copyright_content = metadata.copyright_string();
-    let copyright_path = output_dir.join("COPYRIGHT");
+    let copyright_path = target_path.join("COPYRIGHT");
 
     if verbose {
         eprintln!(
@@ -271,10 +272,10 @@ pub fn generate_legal_files(
         fs::write(copyright_path, copyright_content)?;
     }
 
-    // Generate LICENSE file (currently only MIT supported)
+    // Generate LICENSE file in target project root (currently only MIT supported)
     if metadata.license == "MIT" || metadata.license == "<license>" {
         let license_content = metadata::generate_mit_license(&metadata);
-        let license_path = output_dir.join("LICENSE");
+        let license_path = target_path.join("LICENSE");
 
         if verbose {
             eprintln!(

@@ -76,6 +76,12 @@ fn print_version_info() {
     if let Some(repo) = option_env!("CARGO_PKG_REPOSITORY") {
         println!("Repository: {}", repo);
     }
+    println!(
+        "Build: {} @ {} on {}",
+        env!("GIT_SHORT_HASH"),
+        env!("BUILD_TIMESTAMP"),
+        env!("BUILD_HOST")
+    );
 }
 
 /// Proact: A CLI that generates documentation for AI coding agents
@@ -165,8 +171,8 @@ fn main() -> Result<()> {
         println!("📄 Created: {}", output_file.display());
         println!("📄 Created: {}", output_dir.join("process.md").display());
         println!("📄 Created: {}", output_dir.join("tools.md").display());
-        println!("📄 Created: {}", output_dir.join("COPYRIGHT").display());
-        println!("📄 Created: {}", output_dir.join("LICENSE").display());
+        println!("📄 Created: {}", args.target.join("COPYRIGHT").display());
+        println!("📄 Created: {}", args.target.join("LICENSE").display());
 
         if let Some(appended) = learnings_action {
             let learnings_file = output_dir.join("learnings.md");
@@ -186,9 +192,9 @@ fn main() -> Result<()> {
         println!("📄 Would create: {}", output_dir.join("tools.md").display());
         println!(
             "📄 Would create: {}",
-            output_dir.join("COPYRIGHT").display()
+            args.target.join("COPYRIGHT").display()
         );
-        println!("📄 Would create: {}", output_dir.join("LICENSE").display());
+        println!("📄 Would create: {}", args.target.join("LICENSE").display());
         if let Some(appended) = learnings_action {
             let learnings_file = output_dir.join("learnings.md");
             if appended {

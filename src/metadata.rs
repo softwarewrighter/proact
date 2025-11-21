@@ -58,24 +58,31 @@ fn get_current_year() -> String {
 }
 
 /// Extract git author name and email
+/// Checks PROACT_C_OWNER environment variable first, then falls back to git user.name
 fn get_git_author() -> Result<(String, Option<String>)> {
-    let name_output = Command::new("git")
-        .args(["config", "user.name"])
-        .output()
-        .context("Failed to get git user.name")?;
+    // Check for PROACT_C_OWNER environment variable first
+    let name = if let Ok(owner) = std::env::var("PROACT_C_OWNER") {
+        owner.trim().to_string()
+    } else {
+        // Fall back to git user.name
+        let name_output = Command::new("git")
+            .args(["config", "user.name"])
+            .output()
+            .context("Failed to get git user.name")?;
+
+        if name_output.status.success() {
+            String::from_utf8_lossy(&name_output.stdout)
+                .trim()
+                .to_string()
+        } else {
+            "<author>".to_string()
+        }
+    };
 
     let email_output = Command::new("git")
         .args(["config", "user.email"])
         .output()
         .context("Failed to get git user.email")?;
-
-    let name = if name_output.status.success() {
-        String::from_utf8_lossy(&name_output.stdout)
-            .trim()
-            .to_string()
-    } else {
-        "<author>".to_string()
-    };
 
     let email = if email_output.status.success() {
         let email_str = String::from_utf8_lossy(&email_output.stdout)
