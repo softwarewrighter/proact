@@ -88,3 +88,6 @@ Actively integrate learning from previous mistakes into the proactive developmen
 
 By diligently following these guidelines, AI coding agents will significantly enhance development efficiency, maintainability, and overall code quality.
 
+---
+
+Copyright (c) 2025 Michael A Wright. Licensed under MIT License.

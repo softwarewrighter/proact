@@ -265,3 +265,7 @@ Each time a new pattern of issue is discovered:
 4. Update templates if it's a common pattern across languages
 
 By following these guidelines, AI agents can produce higher quality code on the first attempt, reducing the need for correction cycles and improving overall development efficiency.
+
+---
+
+Copyright (c) 2025 Michael A Wright. Licensed under MIT License.
