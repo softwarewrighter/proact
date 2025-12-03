@@ -1,0 +1,12 @@
+### Python Development
+- Use `uv` for dependency management (preferred over pip/conda)
+  - `uv pip install -r requirements.txt` for installing dependencies
+  - `uv venv` for virtual environment creation
+  - `uv pip compile requirements.in` for dependency locking
+- Use `pytest` to run tests (avoid unittest)
+- Use `ruff` for linting and formatting (replaces black, flake8, pylint, isort)
+  - `ruff check` for linting
+  - `ruff format` for formatting
+- Follow PEP 8 style guidelines
+- Use type hints for all function signatures
+- Use docstrings for all functions, classes, and modules
