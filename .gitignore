@@ -1,4 +1,5 @@
 /target
+**/target/
 
 # Test output directories
 /test-output/

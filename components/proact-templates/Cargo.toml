@@ -1,0 +1,17 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/template-guidelines",
+    "crates/template-notes",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+authors = ["Michael A Wright <mike@softwarewrighter.com>"]
+repository = "https://github.com/softwarewrighter/proact"
+
+[workspace.dependencies]
+template-guidelines = { path = "crates/template-guidelines" }
+template-notes = { path = "crates/template-notes" }

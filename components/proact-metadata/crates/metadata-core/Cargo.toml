@@ -1,0 +1,14 @@
+[package]
+name = "metadata-core"
+description = "Core metadata types for proact"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lib]
+
+[dependencies]
+anyhow.workspace = true
+chrono.workspace = true
+metadata-extract.workspace = true

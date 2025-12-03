@@ -1,0 +1,11 @@
+[package]
+name = "template-notes"
+description = "Project-specific and MCP templates for proact"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lib]
+
+[dependencies]

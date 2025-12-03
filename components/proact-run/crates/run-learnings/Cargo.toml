@@ -1,0 +1,13 @@
+[package]
+name = "run-learnings"
+description = "Learnings file management for proact"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lib]
+
+[dependencies]
+anyhow.workspace = true
+chrono.workspace = true

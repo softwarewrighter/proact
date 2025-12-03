@@ -1,0 +1,33 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/proact",
+    "crates/cli-args",
+    "crates/cli-output",
+    "crates/cli-generator",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+authors = ["Michael A Wright <mike@softwarewrighter.com>"]
+repository = "https://github.com/softwarewrighter/proact"
+
+[workspace.dependencies]
+anyhow = "1.0"
+clap = { version = "4.5", features = ["derive"] }
+chrono = "0.4"
+
+# Internal crates
+cli-args = { path = "crates/cli-args" }
+cli-output = { path = "crates/cli-output" }
+cli-generator = { path = "crates/cli-generator" }
+
+# Cross-component
+template-guidelines = { path = "../proact-templates/crates/template-guidelines" }
+template-notes = { path = "../proact-templates/crates/template-notes" }
+metadata-core = { path = "../proact-metadata/crates/metadata-core" }
+metadata-extract = { path = "../proact-metadata/crates/metadata-extract" }
+run-files = { path = "../proact-run/crates/run-files" }
+run-learnings = { path = "../proact-run/crates/run-learnings" }
