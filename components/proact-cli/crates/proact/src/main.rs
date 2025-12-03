@@ -30,6 +30,16 @@ fn print_version() {
     println!("Build Host: {}", env!("BUILD_HOST"));
 }
 
+fn validate_target(target: &Path) -> Result<()> {
+    if !target.exists() {
+        anyhow::bail!("Target path does not exist: {}", target.display());
+    }
+    if !target.is_dir() {
+        anyhow::bail!("Target path must be a directory: {}", target.display());
+    }
+    Ok(())
+}
+
 fn main() -> Result<()> {
     if std::env::args().any(|a| a == "-V" || a == "--version") {
         print_version();
@@ -37,12 +47,7 @@ fn main() -> Result<()> {
     }
     let args = cli_args::Args::parse();
     let verbose = args.verbose || args.dry_run;
-    if !args.target.exists() {
-        anyhow::bail!("Target path does not exist: {}", args.target.display());
-    }
-    if !args.target.is_dir() {
-        anyhow::bail!("Target path must be a directory: {}", args.target.display());
-    }
+    validate_target(&args.target)?;
     let output_dir = run_files::resolve_output_dir(&args.target, &args.output_dir);
     let doc = cli_generator::generate_documentation(&args.target, verbose)?;
     let output_file = output_dir.join("ai_agent_instructions.md");
