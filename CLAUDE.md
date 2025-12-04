@@ -9,78 +9,111 @@ Proact is a Rust CLI tool that generates comprehensive documentation for AI codi
 ## CLI Usage
 
 ```bash
+# Build release version (from proact-cli component)
+cd components/proact-cli && cargo build --release
+
 # Basic usage
-cargo run -- <target-project-path>
+./components/proact-cli/target/release/proact <target-project-path>
 
 # Show version with copyright, license, and repository
-cargo run -- -V
+./components/proact-cli/target/release/proact -V
 
 # Show extended help with AI coding agent guidance
-cargo run -- --help
+./components/proact-cli/target/release/proact --help
 
 # With verbose output (shows file operations like mkdir and write)
-cargo run -- -v <target-project-path>
+./components/proact-cli/target/release/proact -v <target-project-path>
 
 # Dry run mode (preview operations without creating files)
-cargo run -- -n <target-project-path>
-cargo run -- --dry-run <target-project-path>
+./components/proact-cli/target/release/proact -n <target-project-path>
 
 # Specify custom output directory
-cargo run -- -o ./custom-docs <target-project-path>
-
-# Example: Generate docs for a neighboring project
-cargo run -- -v ../my-project
-
-# Example: Preview what would be created without actually creating files
-cargo run -- -n -o ./test-docs ../my-project
-
-# Build release version
-cargo build --release
-
-# Run release version with dry-run
-./target/release/proact -n ../my-project
+./components/proact-cli/target/release/proact -o ./custom-docs <target-project-path>
 ```
 
 ## Build and Development Commands
 
-### Rust Commands
 ```bash
-# Build the project
-cargo build
+# Build all components
+./scripts/build-all.sh
 
-# Run tests
-cargo test
+# Run tests and clippy on all components
+./scripts/check-all.sh
 
-# Run clippy for linting
-cargo clippy --all-targets --all-features -- -D warnings
+# Format all components
+./scripts/fmt-all.sh
 
-# Format code
-cargo fmt
+# Run proact CLI
+./scripts/run.sh <target-project-path>
+./scripts/run.sh -V
+./scripts/run.sh --help
 
-# Check for compilation errors without building
-cargo check
-
-# Build documentation
-cargo doc --open
+# Single component operations
+cd components/proact-cli && cargo build --release
+cd components/proact-cli && cargo test
+cd components/proact-cli && cargo clippy --all-targets --all-features -- -D warnings
+cd components/proact-cli && cargo fmt
 ```
 
 ## Architecture and Structure
 
-### Core Components
-- **src/main.rs**: CLI entry point that handles argument parsing and orchestrates document generation
-- **src/cli.rs**: Command-line argument parsing using clap, defines CLI interface with AI agent guidance
-- **src/generator.rs**: Core logic for generating documentation, detects project type and customizes output
-- **src/metadata.rs**: Extracts project metadata (author, license, year) from git and project files
-- **src/templates.rs**: Contains all documentation templates (process guidelines, quality standards, Playwright MCP setup)
-- **templates/process.md**: Development process template (copied from needs-attention project)
-- **templates/tools.md**: Development tools reference template (copied from needs-attention project)
-- **docs/ai_agent_guidelines.md**: Source guidelines for AI agent development processes
-- **research/**: Playwright MCP server documentation and setup guides used as reference
+This project follows the Software Wrighter modular architecture pattern with no Cargo.toml in the repo root.
+
+### Component Structure
+
+```
+proact/
+├── components/
+│   ├── proact-cli/              # Main CLI component (workspace)
+│   │   ├── Cargo.toml           # Workspace manifest
+│   │   └── crates/
+│   │       ├── proact/          # Binary entry point
+│   │       ├── cli-args/        # Argument parsing (clap)
+│   │       ├── cli-output/      # Output formatting
+│   │       └── cli-generator/   # Documentation generation
+│   │
+│   ├── proact-templates/        # Template handling (workspace)
+│   │   └── crates/
+│   │       ├── template-guidelines/  # Process/quality templates
+│   │       └── template-notes/       # Project-specific templates
+│   │
+│   ├── proact-metadata/         # Metadata extraction (workspace)
+│   │   └── crates/
+│   │       ├── metadata-core/   # Core types, MIT license
+│   │       └── metadata-extract/# Git/file extraction
+│   │
+│   └── proact-run/              # Runtime helpers (workspace)
+│       └── crates/
+│           ├── run-files/       # File operations
+│           └── run-learnings/   # Learnings management
+│
+├── templates/                   # Template .md files
+│   ├── process_guidelines.md
+│   ├── quality_standards.md
+│   ├── continuous_improvement.md
+│   ├── playwright_mcp_setup.md
+│   ├── summary.md
+│   ├── rust_notes.md
+│   ├── javascript_notes.md
+│   ├── python_notes.md
+│   ├── process.md
+│   └── tools.md
+│
+└── docs/
+```
+
+### Modularity Constraints
+
+Each component follows sw-checklist standards:
+- ≤4 functions per module
+- ≤4 modules per crate
+- ≤4 crates per component
+- ≤25 lines per function (warning), ≤50 lines (failure)
 
 ### Development Process (Checkpoints)
 
 When reaching a checkpoint in development, follow this sequence:
-1. Run and fix all failing tests (`cargo test`)
+1. Run and fix all failing tests (`cargo test` in each component)
 2. Fix linting issues (`cargo clippy`)
 3. Format source code (`cargo fmt`)
 4. Update documentation as needed
@@ -97,27 +130,17 @@ The CLI generates the following documentation in the target project's docs direc
    - Quality Standards: Documentation, testing, and code quality requirements
    - Continuous Improvement: Learning from failures and updating processes
    - Playwright MCP Setup: Installation and usage instructions for browser automation
-   - Project-Specific Notes: Automatically detects project type (Rust, JavaScript, Python, Go) and adds relevant commands
+   - Project-Specific Notes: Automatically detects project type (Rust, JavaScript, Python) and adds relevant commands
 
 2. **process.md**: Detailed development process workflow
-   - Copied/appended from templates/process.md
-   - If file exists, content is appended with timestamp and Proact attribution
 
 3. **tools.md**: Development tools reference
-   - Copied/appended from templates/tools.md
-   - If file exists, content is appended with timestamp and Proact attribution
 
-4. **COPYRIGHT**: Copyright notice
-   - Dynamically generated using current year and git user info
-   - Format: "Copyright (c) YYYY Author Name"
+4. **COPYRIGHT**: Copyright notice (dynamically generated)
 
-5. **LICENSE**: MIT License file
-   - Dynamically generated with copyright holder information
-   - Uses author name from git config or Cargo.toml
+5. **LICENSE**: MIT License file (dynamically generated)
 
 6. **learnings.md**: Continuous improvement tracking
-   - Copied/appended from docs/learnings.md if it exists in Proact's directory
-   - If file exists, content is appended with timestamp separator
 
 ### Quality Standards
 
