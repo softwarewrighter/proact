@@ -7,10 +7,15 @@ use std::path::Path;
 
 const PROCESS_MD: &str = include_str!("../../../../../templates/process.md");
 const TOOLS_MD: &str = include_str!("../../../../../templates/tools.md");
+const YOUTUBE_MD: &str = include_str!("../../../../../templates/youtube.md");
 
 /// Copy or append template files to output directory
 pub fn copy_templates(output_dir: &Path, verbose: bool, dry_run: bool) -> Result<()> {
-    for (content, name) in [(PROCESS_MD, "process.md"), (TOOLS_MD, "tools.md")] {
+    for (content, name) in [
+        (PROCESS_MD, "process.md"),
+        (TOOLS_MD, "tools.md"),
+        (YOUTUBE_MD, "youtube.md"),
+    ] {
         let dest = output_dir.join(name);
         let sep = format!(
             "\n\n---\n\n**Added by Proact on {}**\n\n",

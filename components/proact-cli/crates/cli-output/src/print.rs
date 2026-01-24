@@ -14,6 +14,7 @@ pub fn print_completion(file: &Path, dir: &Path, target: &Path, dry_run: bool) {
         file.to_path_buf(),
         dir.join("process.md"),
         dir.join("tools.md"),
+        dir.join("youtube.md"),
         target.join("COPYRIGHT"),
         target.join("LICENSE"),
     ];
