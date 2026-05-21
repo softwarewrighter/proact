@@ -8,6 +8,7 @@ use std::path::Path;
 const PROCESS_MD: &str = include_str!("../../../../../templates/process.md");
 const TOOLS_MD: &str = include_str!("../../../../../templates/tools.md");
 const YOUTUBE_MD: &str = include_str!("../../../../../templates/youtube.md");
+const CODE_METRICS_MD: &str = include_str!("../../../../../templates/code_metrics.md");
 
 /// Copy or append template files to output directory
 pub fn copy_templates(output_dir: &Path, verbose: bool, dry_run: bool) -> Result<()> {
@@ -15,6 +16,7 @@ pub fn copy_templates(output_dir: &Path, verbose: bool, dry_run: bool) -> Result
         (PROCESS_MD, "process.md"),
         (TOOLS_MD, "tools.md"),
         (YOUTUBE_MD, "youtube.md"),
+        (CODE_METRICS_MD, "code_metrics.md"),
     ] {
         let dest = output_dir.join(name);
         let sep = format!(

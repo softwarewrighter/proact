@@ -5,8 +5,7 @@ use std::path::PathBuf;
 
 fn test_output_dir() -> PathBuf {
     // Navigate from crate dir to repo root, then to test-output
-    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../../../../test-output")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../../../test-output")
 }
 
 #[test]

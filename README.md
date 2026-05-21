@@ -48,8 +48,11 @@ The tool generates an `ai_agent_instructions.md` file containing:
 1. **Process Guidelines** - Checkpoint-based development workflow
 2. **Quality Standards** - Documentation, testing, and code quality requirements
 3. **Continuous Improvement** - Learning from failures and updating processes
-4. **Playwright MCP Setup** - Installation and usage instructions for browser automation
-5. **Project-Specific Notes** - Automatically detects project type and adds relevant commands
+4. **Code Metric Gates** - Small-part complexity gates and refactoring guidance (LOC/function, functions/module, modules/crate)
+5. **Playwright MCP Setup** - Installation and usage instructions for browser automation
+6. **Project-Specific Notes** - Automatically detects project type and adds relevant commands
+
+A standalone `code_metrics.md` is also written alongside `process.md`, `tools.md`, and `youtube.md` so the metric guide can be referenced directly.
 
 ## Project Detection
 

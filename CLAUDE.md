@@ -91,13 +91,15 @@ proact/
 │   ├── process_guidelines.md
 │   ├── quality_standards.md
 │   ├── continuous_improvement.md
+│   ├── code_metrics.md
 │   ├── playwright_mcp_setup.md
 │   ├── summary.md
 │   ├── rust_notes.md
 │   ├── javascript_notes.md
 │   ├── python_notes.md
 │   ├── process.md
-│   └── tools.md
+│   ├── tools.md
+│   └── youtube.md
 │
 └── docs/
 ```
@@ -129,6 +131,7 @@ The CLI generates the following documentation in the target project's docs direc
    - Process Guidelines: Checkpoint-based development workflow
    - Quality Standards: Documentation, testing, and code quality requirements
    - Continuous Improvement: Learning from failures and updating processes
+   - Code Metric Gates: Small-part complexity gates (≤25 LOC/fn, ≤5 fns/module, ≤5 modules/crate) and refactoring playbook
    - Playwright MCP Setup: Installation and usage instructions for browser automation
    - Project-Specific Notes: Automatically detects project type (Rust, JavaScript, Python) and adds relevant commands
 
@@ -136,11 +139,13 @@ The CLI generates the following documentation in the target project's docs direc
 
 3. **tools.md**: Development tools reference
 
-4. **COPYRIGHT**: Copyright notice (dynamically generated)
+4. **code_metrics.md**: Standalone copy of the code metric gates and architecture guide
 
-5. **LICENSE**: MIT License file (dynamically generated)
+5. **COPYRIGHT**: Copyright notice (dynamically generated)
 
-6. **learnings.md**: Continuous improvement tracking
+6. **LICENSE**: MIT License file (dynamically generated)
+
+7. **learnings.md**: Continuous improvement tracking
 
 ### Quality Standards
 

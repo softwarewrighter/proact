@@ -16,6 +16,7 @@ pub fn generate_documentation(target_path: &Path, verbose: bool) -> Result<Strin
         template_guidelines::process_guidelines(),
         template_guidelines::quality_standards(),
         template_guidelines::continuous_improvement(),
+        template_guidelines::code_metrics(),
         template_notes::playwright_mcp_setup(),
         notes.as_deref().unwrap_or(""),
         template_guidelines::summary(),
