@@ -11,14 +11,20 @@ pub fn read_learnings_source() -> Option<String> {
     fs::read_to_string(source).ok()
 }
 
-/// Append content to existing learnings file
+/// Append content to existing learnings file (idempotent: skips when content already present)
 pub fn append_learnings(target: &Path, content: &str, verbose: bool) -> Result<()> {
+    let existing = fs::read_to_string(target)?;
+    if existing.contains(content.trim()) {
+        if verbose {
+            eprintln!("skip {} (already current)", target.display());
+        }
+        return Ok(());
+    }
     let timestamp = Local::now().format("%Y%m%dT%H%M%S").to_string();
     let separator = format!("\n\n---- Added {timestamp} ----\n\n");
     if verbose {
         eprintln!("append {} (+ {} bytes)", target.display(), content.len());
     }
-    let existing = fs::read_to_string(target)?;
     fs::write(target, format!("{existing}{separator}{content}"))?;
     Ok(())
 }

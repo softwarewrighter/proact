@@ -112,6 +112,19 @@ Each component follows sw-checklist standards:
 - ≤4 crates per component
 - ≤25 lines per function (warning), ≤50 lines (failure)
 
+> **Note:** These local gates are intentionally stricter than the published guidance in `docs/code_metrics.md` (which allows ≤5 per level). The repo holds itself to a tighter bar; any code that satisfies ≤4 trivially satisfies ≤5. Follow ≤4 here.
+
+### Generated AI Agent Docs (Dogfooded)
+
+Proact generates its own guidance into `docs/`. AI agents working in this repo MUST follow these in addition to CLAUDE.md:
+- `docs/ai_agent_instructions.md` — combined guidelines (process, quality, continuous improvement, code metrics, MCP, language notes)
+- `docs/code_metrics.md` — small-part complexity gates, refactoring playbook, lib.rs/mod.rs facade rule, build.rs structure, macro guidance
+- `docs/process.md` — detailed checkpoint workflow
+- `docs/tools.md` — development tools reference
+- `docs/learnings.md` — accumulated lessons; consult before repeating past mistakes
+
+Regenerate after touching templates or generators: `./components/proact-cli/target/release/proact -v .`
+
 ### Development Process (Checkpoints)
 
 When reaching a checkpoint in development, follow this sequence:

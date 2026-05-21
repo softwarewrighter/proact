@@ -10,7 +10,7 @@ const TOOLS_MD: &str = include_str!("../../../../../templates/tools.md");
 const YOUTUBE_MD: &str = include_str!("../../../../../templates/youtube.md");
 const CODE_METRICS_MD: &str = include_str!("../../../../../templates/code_metrics.md");
 
-/// Copy or append template files to output directory
+/// Copy template files to output directory (idempotent: skips when template already present)
 pub fn copy_templates(output_dir: &Path, verbose: bool, dry_run: bool) -> Result<()> {
     for (content, name) in [
         (PROCESS_MD, "process.md"),
@@ -19,26 +19,38 @@ pub fn copy_templates(output_dir: &Path, verbose: bool, dry_run: bool) -> Result
         (CODE_METRICS_MD, "code_metrics.md"),
     ] {
         let dest = output_dir.join(name);
-        let sep = format!(
-            "\n\n---\n\n**Added by Proact on {}**\n\n",
-            Local::now().format("%Y-%m-%d %H:%M:%S")
-        );
-        let text = if dest.exists() {
-            if verbose {
-                eprintln!("append {}", dest.display());
-            }
-            format!("{}{sep}{content}", fs::read_to_string(&dest)?)
-        } else {
-            if verbose {
-                eprintln!("write {}", dest.display());
-            }
-            content.to_string()
-        };
-        if !dry_run {
-            fs::write(dest, text)?;
+        if let Some(text) = prepare_template_content(&dest, content, verbose)?
+            && !dry_run
+        {
+            fs::write(&dest, text)?;
         }
     }
     Ok(())
+}
+
+/// Decide what to write for a template: fresh content, an appended update, or skip when current
+fn prepare_template_content(dest: &Path, template: &str, verbose: bool) -> Result<Option<String>> {
+    if !dest.exists() {
+        if verbose {
+            eprintln!("write {}", dest.display());
+        }
+        return Ok(Some(template.to_string()));
+    }
+    let existing = fs::read_to_string(dest)?;
+    if existing.contains(template.trim()) {
+        if verbose {
+            eprintln!("skip {} (already current)", dest.display());
+        }
+        return Ok(None);
+    }
+    if verbose {
+        eprintln!("append {}", dest.display());
+    }
+    let sep = format!(
+        "\n\n---\n\n**Added by Proact on {}**\n\n",
+        Local::now().format("%Y-%m-%d %H:%M:%S")
+    );
+    Ok(Some(format!("{existing}{sep}{template}")))
 }
 
 /// Generate COPYRIGHT and LICENSE files

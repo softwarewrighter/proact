@@ -20,6 +20,31 @@ pub fn get_git_author() -> Result<String> {
     })
 }
 
+/// Get the year of the first git commit in the project (env override: PROACT_C_START_YEAR)
+pub fn get_first_commit_year(project_path: &Path) -> Option<String> {
+    if let Ok(year) = std::env::var("PROACT_C_START_YEAR")
+        && !year.trim().is_empty()
+    {
+        return Some(year.trim().to_string());
+    }
+    let dir = project_path.display().to_string();
+    let args = [
+        "-C",
+        &dir,
+        "log",
+        "--reverse",
+        "--format=%cd",
+        "--date=format:%Y",
+    ];
+    let output = Command::new("git").args(args).output().ok()?;
+    if !output.status.success() {
+        return None;
+    }
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let year = stdout.lines().next()?.trim().to_string();
+    if year.is_empty() { None } else { Some(year) }
+}
+
 /// Extract license from project files
 pub fn extract_license(project_path: &Path) -> String {
     if let Some(license) = extract_from_file(project_path, "Cargo.toml", "license", '=') {
